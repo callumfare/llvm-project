@@ -24,7 +24,8 @@ template <> struct is_handle<offload_device_handle_t> : std::true_type {};
 template <> struct is_handle<offload_context_handle_t> : std::true_type {};
 template <typename T> inline constexpr bool is_handle_v = is_handle<T>::value;
 
-inline std::ostream &operator<<(std::ostream &os, enum offload_result_t value);
+inline std::ostream &operator<<(std::ostream &os,
+                                enum offload_error_code_t value);
 inline std::ostream &operator<<(std::ostream &os,
                                 enum offload_platform_info_t value);
 inline std::ostream &operator<<(std::ostream &os,
@@ -35,60 +36,61 @@ inline std::ostream &operator<<(std::ostream &os,
                                 enum offload_device_info_t value);
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief Print operator for the offload_result_t type
+/// @brief Print operator for the offload_error_code_t type
 /// @returns std::ostream &
-inline std::ostream &operator<<(std::ostream &os, enum offload_result_t value) {
+inline std::ostream &operator<<(std::ostream &os,
+                                enum offload_error_code_t value) {
   switch (value) {
-  case OFFLOAD_RESULT_SUCCESS:
-    os << "OFFLOAD_RESULT_SUCCESS";
+  case OFFLOAD_ERROR_CODE_SUCCESS:
+    os << "OFFLOAD_ERROR_CODE_SUCCESS";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_VALUE:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_VALUE";
+  case OFFLOAD_ERROR_CODE_INVALID_VALUE:
+    os << "OFFLOAD_ERROR_CODE_INVALID_VALUE";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_PLATFORM:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_PLATFORM";
+  case OFFLOAD_ERROR_CODE_INVALID_PLATFORM:
+    os << "OFFLOAD_ERROR_CODE_INVALID_PLATFORM";
     break;
-  case OFFLOAD_RESULT_ERROR_DEVICE_NOT_FOUND:
-    os << "OFFLOAD_RESULT_ERROR_DEVICE_NOT_FOUND";
+  case OFFLOAD_ERROR_CODE_DEVICE_NOT_FOUND:
+    os << "OFFLOAD_ERROR_CODE_DEVICE_NOT_FOUND";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_DEVICE:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_DEVICE";
+  case OFFLOAD_ERROR_CODE_INVALID_DEVICE:
+    os << "OFFLOAD_ERROR_CODE_INVALID_DEVICE";
     break;
-  case OFFLOAD_RESULT_ERROR_DEVICE_LOST:
-    os << "OFFLOAD_RESULT_ERROR_DEVICE_LOST";
+  case OFFLOAD_ERROR_CODE_DEVICE_LOST:
+    os << "OFFLOAD_ERROR_CODE_DEVICE_LOST";
     break;
-  case OFFLOAD_RESULT_ERROR_UNINITIALIZED:
-    os << "OFFLOAD_RESULT_ERROR_UNINITIALIZED";
+  case OFFLOAD_ERROR_CODE_UNINITIALIZED:
+    os << "OFFLOAD_ERROR_CODE_UNINITIALIZED";
     break;
-  case OFFLOAD_RESULT_ERROR_OUT_OF_RESOURCES:
-    os << "OFFLOAD_RESULT_ERROR_OUT_OF_RESOURCES";
+  case OFFLOAD_ERROR_CODE_OUT_OF_RESOURCES:
+    os << "OFFLOAD_ERROR_CODE_OUT_OF_RESOURCES";
     break;
-  case OFFLOAD_RESULT_ERROR_UNSUPPORTED_VERSION:
-    os << "OFFLOAD_RESULT_ERROR_UNSUPPORTED_VERSION";
+  case OFFLOAD_ERROR_CODE_UNSUPPORTED_VERSION:
+    os << "OFFLOAD_ERROR_CODE_UNSUPPORTED_VERSION";
     break;
-  case OFFLOAD_RESULT_ERROR_UNSUPPORTED_FEATURE:
-    os << "OFFLOAD_RESULT_ERROR_UNSUPPORTED_FEATURE";
+  case OFFLOAD_ERROR_CODE_UNSUPPORTED_FEATURE:
+    os << "OFFLOAD_ERROR_CODE_UNSUPPORTED_FEATURE";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_ARGUMENT:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_ARGUMENT";
+  case OFFLOAD_ERROR_CODE_INVALID_ARGUMENT:
+    os << "OFFLOAD_ERROR_CODE_INVALID_ARGUMENT";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_NULL_HANDLE:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_NULL_HANDLE";
+  case OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE:
+    os << "OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_NULL_POINTER:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_NULL_POINTER";
+  case OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER:
+    os << "OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_SIZE:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_SIZE";
+  case OFFLOAD_ERROR_CODE_INVALID_SIZE:
+    os << "OFFLOAD_ERROR_CODE_INVALID_SIZE";
     break;
-  case OFFLOAD_RESULT_ERROR_INVALID_ENUMERATION:
-    os << "OFFLOAD_RESULT_ERROR_INVALID_ENUMERATION";
+  case OFFLOAD_ERROR_CODE_INVALID_ENUMERATION:
+    os << "OFFLOAD_ERROR_CODE_INVALID_ENUMERATION";
     break;
-  case OFFLOAD_RESULT_ERROR_UNSUPPORTED_ENUMERATION:
-    os << "OFFLOAD_RESULT_ERROR_UNSUPPORTED_ENUMERATION";
+  case OFFLOAD_ERROR_CODE_UNSUPPORTED_ENUMERATION:
+    os << "OFFLOAD_ERROR_CODE_UNSUPPORTED_ENUMERATION";
     break;
-  case OFFLOAD_RESULT_ERROR_UNKNOWN:
-    os << "OFFLOAD_RESULT_ERROR_UNKNOWN";
+  case OFFLOAD_ERROR_CODE_UNKNOWN:
+    os << "OFFLOAD_ERROR_CODE_UNKNOWN";
     break;
   default:
     os << "unknown enumerator";
@@ -278,17 +280,6 @@ inline void printTagged(std::ostream &os, const void *ptr,
     os << "unknown enumerator";
     break;
   }
-}
-
-inline std::ostream &operator<<(
-    std::ostream &os,
-    [[maybe_unused]] const struct offload_get_error_details_params_t *params) {
-  os << ".SizeRet = ";
-  printPtr(os, *params->pSizeRet);
-  os << ", ";
-  os << ".DetailStringRet = ";
-  printPtr(os, *params->pDetailStringRet);
-  return os;
 }
 
 inline std::ostream &operator<<(

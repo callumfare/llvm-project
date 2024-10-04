@@ -18,6 +18,15 @@
 #define ASSERT_SUCCESS(ACTUAL) ASSERT_EQ(OFFLOAD_RESULT_SUCCESS, ACTUAL)
 #endif
 
+// TODO: rework this so the EXPECTED/ACTUAL results are readable
+#ifndef ASSERT_ERROR
+#define ASSERT_ERROR(EXPECTED, ACTUAL)                                         \
+  do {                                                                         \
+    offload_result_t Res = ACTUAL;                                             \
+    ASSERT_TRUE(Res && (Res->code == EXPECTED));                               \
+  } while (0)
+#endif
+
 #define RETURN_ON_FATAL_FAILURE(...)                                           \
   __VA_ARGS__;                                                                 \
   if (this->HasFatalFailure() || this->IsSkipped()) {                          \

@@ -23,7 +23,7 @@ using namespace offload::tblgen;
 static void EmitValidationFunc(const FunctionRec &F, raw_ostream &OS) {
   OS << CommentsHeader;
   // Emit preamble
-  OS << formatv("{0}_result_t {1}_val(\n  ", PrefixLower, F.getName());
+  OS << formatv("{0}_impl_result_t {1}_val(\n  ", PrefixLower, F.getName());
   // Emit arguments
   std::string ParamNameList = "";
   for (auto &Param : F.getParams()) {
@@ -91,9 +91,13 @@ static void EmitEntryPointFunc(const FunctionRec &F, raw_ostream &OS) {
   }
   OS << formatv("};\n");
   OS << TAB_2 "std::cout << \"(\" << &Params << \")\";\n";
-  OS << TAB_2 "std::cout << \"-> \" << result << \"\\n\";\n";
-  OS << TAB_2 "if (result != OFFLOAD_RESULT_SUCCESS && LastErrorDetails()) {\n";
-  OS << TAB_3 "std::cout << \"     *Error Details* \" << *LastErrorDetails() "
+  // TODO: The result type printing can be handled better in the print header,
+  // this is just a hack for demo purposes
+  OS << TAB_2
+      "std::cout << \"-> \" << offload_error_code_t(result ? result->code : "
+      "OFFLOAD_ERROR_CODE_SUCCESS) << \"\\n\";\n";
+  OS << TAB_2 "if (result && result->details) {\n";
+  OS << TAB_3 "std::cout << \"     *Error Details* \" << result->details "
               "<< \" \\n\";\n";
   OS << TAB_2 "}\n";
   OS << TAB_1 "}\n";
