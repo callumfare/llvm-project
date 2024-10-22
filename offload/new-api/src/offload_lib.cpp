@@ -21,11 +21,10 @@ llvm::StringSet<> &ErrorStrs() {
   return ErrorStrs;
 }
 
-std::vector<ErrPtrT> &Errors() {
-  static std::vector<ErrPtrT> Errors{};
+ErrSetT &Errors() {
+  static ErrSetT Errors{};
   return Errors;
 }
-
 
 // Pull in the declarations for the implementation funtions. The actual entry
 // points in this file wrap these.
