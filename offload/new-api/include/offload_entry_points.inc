@@ -13,7 +13,7 @@ offloadPlatformGet_val(uint32_t NumEntries,
                        uint32_t *pNumPlatforms) {
   if (true /*enableParameterValidation*/) {
     if (NumEntries == 0 && phPlatforms != NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_SIZE;
+      return OFFLOAD_ERRC_INVALID_SIZE;
     }
   }
 
@@ -33,10 +33,7 @@ offloadPlatformGet(uint32_t NumEntries, offload_platform_handle_t *phPlatforms,
     offload_platform_get_params_t Params = {&NumEntries, &phPlatforms,
                                             &pNumPlatforms};
     std::cout << "(" << &Params << ")";
-    std::cout << "-> "
-              << offload_error_code_t(result ? result->code
-                                             : OFFLOAD_ERROR_CODE_SUCCESS)
-              << "\n";
+    std::cout << "-> " << result << "\n";
     if (result && result->details) {
       std::cout << "     *Error Details* " << result->details << " \n";
     }
@@ -51,19 +48,19 @@ offloadPlatformGetInfo_val(offload_platform_handle_t hPlatform,
                            void *pPropValue, size_t *pPropSizeRet) {
   if (true /*enableParameterValidation*/) {
     if (propSize == 0 && pPropValue != NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_SIZE;
+      return OFFLOAD_ERRC_INVALID_SIZE;
     }
 
     if (propSize != 0 && pPropValue == NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER;
+      return OFFLOAD_ERRC_INVALID_NULL_POINTER;
     }
 
     if (pPropValue == NULL && pPropSizeRet == NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER;
+      return OFFLOAD_ERRC_INVALID_NULL_POINTER;
     }
 
     if (NULL == hPlatform) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE;
+      return OFFLOAD_ERRC_INVALID_NULL_HANDLE;
     }
   }
 
@@ -84,10 +81,7 @@ OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadPlatformGetInfo(
     offload_platform_get_info_params_t Params = {
         &hPlatform, &propName, &propSize, &pPropValue, &pPropSizeRet};
     std::cout << "(" << &Params << ")";
-    std::cout << "-> "
-              << offload_error_code_t(result ? result->code
-                                             : OFFLOAD_ERROR_CODE_SUCCESS)
-              << "\n";
+    std::cout << "-> " << result << "\n";
     if (result && result->details) {
       std::cout << "     *Error Details* " << result->details << " \n";
     }
@@ -103,15 +97,15 @@ offload_impl_result_t offloadDeviceGet_val(offload_platform_handle_t hPlatform,
                                            uint32_t *pNumDevices) {
   if (true /*enableParameterValidation*/) {
     if (NumEntries == 0 && phDevices != NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_SIZE;
+      return OFFLOAD_ERRC_INVALID_SIZE;
     }
 
     if (NumEntries > 0 && phDevices == NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER;
+      return OFFLOAD_ERRC_INVALID_NULL_POINTER;
     }
 
     if (NULL == hPlatform) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE;
+      return OFFLOAD_ERRC_INVALID_NULL_HANDLE;
     }
   }
 
@@ -133,10 +127,7 @@ offloadDeviceGet(offload_platform_handle_t hPlatform,
     offload_device_get_params_t Params = {&hPlatform, &DeviceType, &NumEntries,
                                           &phDevices, &pNumDevices};
     std::cout << "(" << &Params << ")";
-    std::cout << "-> "
-              << offload_error_code_t(result ? result->code
-                                             : OFFLOAD_ERROR_CODE_SUCCESS)
-              << "\n";
+    std::cout << "-> " << result << "\n";
     if (result && result->details) {
       std::cout << "     *Error Details* " << result->details << " \n";
     }
@@ -152,19 +143,19 @@ offload_impl_result_t offloadDeviceGetInfo_val(offload_device_handle_t hDevice,
                                                size_t *pPropSizeRet) {
   if (true /*enableParameterValidation*/) {
     if (propSize == 0 && pPropValue != NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_SIZE;
+      return OFFLOAD_ERRC_INVALID_SIZE;
     }
 
     if (propSize != 0 && pPropValue == NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER;
+      return OFFLOAD_ERRC_INVALID_NULL_POINTER;
     }
 
     if (pPropValue == NULL && pPropSizeRet == NULL) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER;
+      return OFFLOAD_ERRC_INVALID_NULL_POINTER;
     }
 
     if (NULL == hDevice) {
-      return OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE;
+      return OFFLOAD_ERRC_INVALID_NULL_HANDLE;
     }
   }
 
@@ -185,10 +176,7 @@ OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadDeviceGetInfo(
     offload_device_get_info_params_t Params = {&hDevice, &propName, &propSize,
                                                &pPropValue, &pPropSizeRet};
     std::cout << "(" << &Params << ")";
-    std::cout << "-> "
-              << offload_error_code_t(result ? result->code
-                                             : OFFLOAD_ERROR_CODE_SUCCESS)
-              << "\n";
+    std::cout << "-> " << result << "\n";
     if (result && result->details) {
       std::cout << "     *Error Details* " << result->details << " \n";
     }

@@ -45,7 +45,7 @@ def : Handle {
 }
 
 def : Enum {
-  let name = "offload_error_code_t";
+  let name = "offload_errc_t";
   let desc = "Defines Return/Error codes";
   let etors =[
     Etor<"SUCCESS", "Success">,
@@ -70,9 +70,9 @@ def : Enum {
 
 def : Struct {
   let name = "offload_error_struct_t";
-  let desc = "The result";
+  let desc = "Details of the error condition returned by an API call";
   let members = [
-    StructMember<"offload_error_code_t", "code", "The error code">,
+    StructMember<"offload_errc_t", "code", "The error code">,
     StructMember<"const char*", "details", "String containing error details">
   ];
 }
@@ -84,7 +84,8 @@ def : Typedef {
 }
 
 def : Macro {
-  let name = "OFFLOAD_RESULT_SUCCESS";
-  let desc = "Success result type";
+  let name = "OFFLOAD_SUCCESS";
+  let condition = "!defined(OFFLOAD_SUCCESS)";
+  let desc = "Success condition";
   let value = "NULL";
 }

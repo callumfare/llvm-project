@@ -15,7 +15,7 @@
 #pragma once
 
 #ifndef ASSERT_SUCCESS
-#define ASSERT_SUCCESS(ACTUAL) ASSERT_EQ(OFFLOAD_RESULT_SUCCESS, ACTUAL)
+#define ASSERT_SUCCESS(ACTUAL) ASSERT_EQ(OFFLOAD_SUCCESS, ACTUAL)
 #endif
 
 // TODO: rework this so the EXPECTED/ACTUAL results are readable

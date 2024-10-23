@@ -91,11 +91,7 @@ static void EmitEntryPointFunc(const FunctionRec &F, raw_ostream &OS) {
   }
   OS << formatv("};\n");
   OS << TAB_2 "std::cout << \"(\" << &Params << \")\";\n";
-  // TODO: The result type printing can be handled better in the print header,
-  // this is just a hack for demo purposes
-  OS << TAB_2
-      "std::cout << \"-> \" << offload_error_code_t(result ? result->code : "
-      "OFFLOAD_ERROR_CODE_SUCCESS) << \"\\n\";\n";
+  OS << TAB_2 "std::cout << \"-> \" << result << \"\\n\";\n";
   OS << TAB_2 "if (result && result->details) {\n";
   OS << TAB_3 "std::cout << \"     *Error Details* \" << result->details "
               "<< \" \\n\";\n";

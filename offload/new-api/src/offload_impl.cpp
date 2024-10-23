@@ -78,7 +78,7 @@ offloadPlatformGet_impl(uint32_t NumEntries,
   std::call_once(InitFlag, initPlugins);
 
   if (NumEntries > Platforms().size()) {
-    return {OFFLOAD_ERROR_CODE_INVALID_SIZE,
+    return {OFFLOAD_ERRC_INVALID_SIZE,
             std::string{formatv("{0} platform(s) available but {1} requested.",
                                 Platforms().size(), NumEntries)}};
   }
@@ -94,7 +94,7 @@ offloadPlatformGet_impl(uint32_t NumEntries,
     *pNumPlatforms = Platforms().size();
   }
 
-  return OFFLOAD_RESULT_SUCCESS;
+  return OFFLOAD_SUCCESS;
 }
 
 offload_impl_result_t
@@ -124,10 +124,10 @@ offloadPlatformGetInfo_impl(offload_platform_handle_t hPlatform,
     }
   }
   default:
-    return OFFLOAD_ERROR_CODE_INVALID_ENUMERATION;
+    return OFFLOAD_ERRC_INVALID_ENUMERATION;
   }
 
-  return OFFLOAD_RESULT_SUCCESS;
+  return OFFLOAD_SUCCESS;
 }
 
 offload_impl_result_t offloadDeviceGet_impl(offload_platform_handle_t hPlatform,
@@ -146,7 +146,7 @@ offload_impl_result_t offloadDeviceGet_impl(offload_platform_handle_t hPlatform,
     *pNumDevices = static_cast<uint32_t>(hPlatform->Devices.size());
   }
 
-  return OFFLOAD_RESULT_SUCCESS;
+  return OFFLOAD_SUCCESS;
 }
 
 offload_impl_result_t offloadDeviceGetInfo_impl(offload_device_handle_t hDevice,
@@ -159,7 +159,7 @@ offload_impl_result_t offloadDeviceGetInfo_impl(offload_device_handle_t hDevice,
 
   InfoQueueTy DevInfo;
   if (auto Err = hDevice->Device.obtainInfoImpl(DevInfo))
-    return OFFLOAD_ERROR_CODE_OUT_OF_RESOURCES;
+    return OFFLOAD_ERRC_OUT_OF_RESOURCES;
 
   // Find the info if it exists under any of the given names
   auto GetInfo = [&DevInfo](std::vector<std::string> Names) {
@@ -191,8 +191,8 @@ offload_impl_result_t offloadDeviceGetInfo_impl(offload_device_handle_t hDevice,
     return ReturnValue(
         GetInfo({"CUDA Driver Version", "HSA Runtime Version"}).c_str());
   default:
-    return OFFLOAD_ERROR_CODE_INVALID_ENUMERATION;
+    return OFFLOAD_ERRC_INVALID_ENUMERATION;
   }
 
-  return OFFLOAD_RESULT_SUCCESS;
+  return OFFLOAD_SUCCESS;
 }

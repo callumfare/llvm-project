@@ -61,9 +61,9 @@ using ErrSetT = std::unordered_set<ErrPtrT, ErrPtrHash, ErrPtrEqual>;
 ErrSetT &Errors();
 
 struct offload_impl_result_t {
-  offload_impl_result_t(std::nullptr_t) : Result(OFFLOAD_RESULT_SUCCESS) {}
-  offload_impl_result_t(offload_error_code_t Code) {
-    if (Code == OFFLOAD_ERROR_CODE_SUCCESS) {
+  offload_impl_result_t(std::nullptr_t) : Result(OFFLOAD_SUCCESS) {}
+  offload_impl_result_t(offload_errc_t Code) {
+    if (Code == OFFLOAD_ERRC_SUCCESS) {
       Result = nullptr;
     } else {
       auto Err = std::unique_ptr<offload_error_struct_t>(
@@ -72,8 +72,8 @@ struct offload_impl_result_t {
     }
   }
 
-  offload_impl_result_t(offload_error_code_t Code, llvm::StringRef Details) {
-    assert(Code != OFFLOAD_ERROR_CODE_SUCCESS);
+  offload_impl_result_t(offload_errc_t Code, llvm::StringRef Details) {
+    assert(Code != OFFLOAD_ERRC_SUCCESS);
     Result = nullptr;
     auto DetailsStr = ErrorStrs().insert(Details).first->getKeyData();
     auto Err = std::unique_ptr<offload_error_struct_t>(

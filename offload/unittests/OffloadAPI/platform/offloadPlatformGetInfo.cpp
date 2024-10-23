@@ -57,14 +57,14 @@ TEST_P(offloadPlatformGetInfoTest, Success) {
 
 TEST_F(offloadPlatformGetInfoTest, InvalidNullHandle) {
   size_t Size = 0;
-  ASSERT_ERROR(OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE,
+  ASSERT_ERROR(OFFLOAD_ERRC_INVALID_NULL_HANDLE,
                offloadPlatformGetInfo(nullptr, OFFLOAD_PLATFORM_INFO_BACKEND, 0,
                                       nullptr, &Size));
 }
 
 TEST_F(offloadPlatformGetInfoTest, InvalidPlatformInfoEnumeration) {
   size_t Size = 0;
-  ASSERT_ERROR(OFFLOAD_ERROR_CODE_INVALID_ENUMERATION,
+  ASSERT_ERROR(OFFLOAD_ERRC_INVALID_ENUMERATION,
                offloadPlatformGetInfo(Platform,
                                       OFFLOAD_PLATFORM_INFO_FORCE_UINT32, 0,
                                       nullptr, &Size));
@@ -72,27 +72,27 @@ TEST_F(offloadPlatformGetInfoTest, InvalidPlatformInfoEnumeration) {
 
 TEST_F(offloadPlatformGetInfoTest, InvalidSizeZero) {
   offload_platform_backend_t Backend;
-  ASSERT_ERROR(OFFLOAD_ERROR_CODE_INVALID_SIZE,
+  ASSERT_ERROR(OFFLOAD_ERRC_INVALID_SIZE,
                offloadPlatformGetInfo(Platform, OFFLOAD_PLATFORM_INFO_BACKEND,
                                       0, &Backend, nullptr));
 }
 
 TEST_F(offloadPlatformGetInfoTest, InvalidSizeSmall) {
   offload_platform_backend_t Backend;
-  ASSERT_ERROR(OFFLOAD_ERROR_CODE_INVALID_SIZE,
+  ASSERT_ERROR(OFFLOAD_ERRC_INVALID_SIZE,
                offloadPlatformGetInfo(Platform, OFFLOAD_PLATFORM_INFO_BACKEND,
                                       sizeof(Backend) - 1, &Backend, nullptr));
 }
 
 TEST_F(offloadPlatformGetInfoTest, InvalidNullPointerPropValue) {
   offload_platform_backend_t Backend;
-  ASSERT_ERROR(OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER,
+  ASSERT_ERROR(OFFLOAD_ERRC_INVALID_NULL_POINTER,
                offloadPlatformGetInfo(Platform, OFFLOAD_PLATFORM_INFO_BACKEND,
                                       sizeof(Backend), nullptr, nullptr));
 }
 
 TEST_F(offloadPlatformGetInfoTest, InvalidNullPointerPropSizeRet) {
-  ASSERT_ERROR(OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER,
+  ASSERT_ERROR(OFFLOAD_ERRC_INVALID_NULL_POINTER,
                offloadPlatformGetInfo(Platform, OFFLOAD_PLATFORM_INFO_BACKEND,
                                       0, nullptr, nullptr));
 }

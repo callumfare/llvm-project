@@ -69,52 +69,52 @@ typedef struct offload_context_handle_t_ *offload_context_handle_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Defines Return/Error codes
-typedef enum offload_error_code_t {
+typedef enum offload_errc_t {
   /// Success
-  OFFLOAD_ERROR_CODE_SUCCESS = 0,
+  OFFLOAD_ERRC_SUCCESS = 0,
   /// Invalid Value
-  OFFLOAD_ERROR_CODE_INVALID_VALUE = 1,
+  OFFLOAD_ERRC_INVALID_VALUE = 1,
   /// Invalid platform
-  OFFLOAD_ERROR_CODE_INVALID_PLATFORM = 2,
+  OFFLOAD_ERRC_INVALID_PLATFORM = 2,
   /// Device not found
-  OFFLOAD_ERROR_CODE_DEVICE_NOT_FOUND = 3,
+  OFFLOAD_ERRC_DEVICE_NOT_FOUND = 3,
   /// Invalid device
-  OFFLOAD_ERROR_CODE_INVALID_DEVICE = 4,
+  OFFLOAD_ERRC_INVALID_DEVICE = 4,
   /// Device hung, reset, was removed, or driver update occurred
-  OFFLOAD_ERROR_CODE_DEVICE_LOST = 5,
+  OFFLOAD_ERRC_DEVICE_LOST = 5,
   /// plugin is not initialized or specific entry-point is not implemented
-  OFFLOAD_ERROR_CODE_UNINITIALIZED = 6,
+  OFFLOAD_ERRC_UNINITIALIZED = 6,
   /// Out of resources
-  OFFLOAD_ERROR_CODE_OUT_OF_RESOURCES = 7,
+  OFFLOAD_ERRC_OUT_OF_RESOURCES = 7,
   /// generic error code for unsupported versions
-  OFFLOAD_ERROR_CODE_UNSUPPORTED_VERSION = 8,
+  OFFLOAD_ERRC_UNSUPPORTED_VERSION = 8,
   /// generic error code for unsupported features
-  OFFLOAD_ERROR_CODE_UNSUPPORTED_FEATURE = 9,
+  OFFLOAD_ERRC_UNSUPPORTED_FEATURE = 9,
   /// generic error code for invalid arguments
-  OFFLOAD_ERROR_CODE_INVALID_ARGUMENT = 10,
+  OFFLOAD_ERRC_INVALID_ARGUMENT = 10,
   /// handle argument is not valid
-  OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE = 11,
+  OFFLOAD_ERRC_INVALID_NULL_HANDLE = 11,
   /// pointer argument may not be nullptr
-  OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER = 12,
+  OFFLOAD_ERRC_INVALID_NULL_POINTER = 12,
   /// invalid size or dimensions (e.g., must not be zero, or is out of bounds)
-  OFFLOAD_ERROR_CODE_INVALID_SIZE = 13,
+  OFFLOAD_ERRC_INVALID_SIZE = 13,
   /// enumerator argument is not valid
-  OFFLOAD_ERROR_CODE_INVALID_ENUMERATION = 14,
+  OFFLOAD_ERRC_INVALID_ENUMERATION = 14,
   /// enumerator argument is not supported by the device
-  OFFLOAD_ERROR_CODE_UNSUPPORTED_ENUMERATION = 15,
+  OFFLOAD_ERRC_UNSUPPORTED_ENUMERATION = 15,
   /// Unknown or internal error
-  OFFLOAD_ERROR_CODE_UNKNOWN = 16,
+  OFFLOAD_ERRC_UNKNOWN = 16,
   /// @cond
-  OFFLOAD_ERROR_CODE_FORCE_UINT32 = 0x7fffffff
+  OFFLOAD_ERRC_FORCE_UINT32 = 0x7fffffff
   /// @endcond
 
-} offload_error_code_t;
+} offload_errc_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-/// @brief The result
+/// @brief Details of the error condition returned by an API call
 typedef struct offload_error_struct_t {
-  offload_error_code_t code; /// The error code
-  const char *details;       /// String containing error details
+  offload_errc_t code; /// The error code
+  const char *details; /// String containing error details
 } offload_error_struct_t;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -122,10 +122,12 @@ typedef struct offload_error_struct_t {
 typedef const offload_error_struct_t *offload_result_t;
 
 ///////////////////////////////////////////////////////////////////////////////
-#ifndef OFFLOAD_RESULT_SUCCESS
-/// @brief Success result type
-#define OFFLOAD_RESULT_SUCCESS NULL
-#endif // OFFLOAD_RESULT_SUCCESS
+#ifndef OFFLOAD_SUCCESS
+#if !defined(OFFLOAD_SUCCESS)
+/// @brief Success condition
+#define OFFLOAD_SUCCESS NULL
+#endif // !defined(OFFLOAD_SUCCESS)
+#endif // OFFLOAD_SUCCESS
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Retrieves all available platforms
@@ -138,14 +140,14 @@ typedef const offload_error_struct_t *offload_result_t;
 ///     - ::OFFLOAD_RESULT_SUCCESS
 ///     - ::OFFLOAD_RESULT_ERROR_UNINITIALIZED
 ///     - ::OFFLOAD_RESULT_ERROR_DEVICE_LOST
-///     - ::OFFLOAD_ERROR_CODE_INVALID_SIZE
+///     - ::OFFLOAD_ERRC_INVALID_SIZE
 ///         + `NumEntries == 0 && phPlatforms != NULL`
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE
+///     - ::OFFLOAD_ERRC_INVALID_NULL_HANDLE
 ///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
 OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadPlatformGet(
     // [in] The number of platforms to be added to phPlatforms. If phPlatforms
     // is not NULL, then NumEntries should be greater than zero, otherwise
-    // OFFLOAD_ERROR_CODE_INVALID_SIZE will be returned.
+    // OFFLOAD_ERRC_INVALID_SIZE will be returned.
     uint32_t NumEntries,
     // [out][optional] Array of handle of platforms. If NumEntries is less than
     // the number of platforms available, then offloadPlatformGet shall only
@@ -201,20 +203,21 @@ typedef enum offload_platform_backend_t {
 ///     - ::OFFLOAD_RESULT_SUCCESS
 ///     - ::OFFLOAD_RESULT_ERROR_UNINITIALIZED
 ///     - ::OFFLOAD_RESULT_ERROR_DEVICE_LOST
-///     - ::OFFLOAD_ERROR_CODE_UNSUPPORTED_ENUMERATION
+///     - ::OFFLOAD_ERRC_UNSUPPORTED_ENUMERATION
 ///         + If `propName` is not supported by the platform.
-///     - ::OFFLOAD_ERROR_CODE_INVALID_SIZE
+///     - ::OFFLOAD_ERRC_INVALID_SIZE
 ///         + `propSize == 0 && pPropValue != NULL`
 ///         + If `propSize` is less than the real number of bytes needed to
 ///         return the info.
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
+///     - ::OFFLOAD_ERRC_INVALID_NULL_POINTER
 ///         + `propSize != 0 && pPropValue == NULL`
 ///         + `pPropValue == NULL && pPropSizeRet == NULL`
-///     - ::OFFLOAD_ERROR_CODE_INVALID_PLATFORM
-///     - ::OFFLOAD_ERROR_CODE_OUT_OF_RESOURCES
-///     - ::OFFLOAD_ERROR_CODE_OUT_OF_HOST_MEMORY
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE
+///     - ::OFFLOAD_ERRC_INVALID_PLATFORM
+///     - ::OFFLOAD_ERRC_OUT_OF_RESOURCES
+///     - ::OFFLOAD_ERRC_OUT_OF_HOST_MEMORY
+///     - ::OFFLOAD_ERRC_INVALID_NULL_HANDLE
 ///         + `NULL == hPlatform`
+///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
 OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadPlatformGetInfo(
     // [in] handle of the platform
     offload_platform_handle_t hPlatform,
@@ -224,8 +227,8 @@ OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadPlatformGetInfo(
     size_t propSize,
     // [out][optional] array of bytes holding the info. If Size is not equal to
     // or greater to the real number of bytes needed to return the info then the
-    // OFFLOAD_ERROR_CODE_INVALID_SIZE error is returned and pPlatformInfo is
-    // not used.
+    // OFFLOAD_ERRC_INVALID_SIZE error is returned and pPlatformInfo is not
+    // used.
     void *pPropValue,
     // [out][optional] pointer to the actual number of bytes being queried by
     // pPlatformInfo.
@@ -285,13 +288,14 @@ typedef enum offload_device_info_t {
 ///     - ::OFFLOAD_RESULT_SUCCESS
 ///     - ::OFFLOAD_RESULT_ERROR_UNINITIALIZED
 ///     - ::OFFLOAD_RESULT_ERROR_DEVICE_LOST
-///     - ::OFFLOAD_ERROR_CODE_INVALID_SIZE
+///     - ::OFFLOAD_ERRC_INVALID_SIZE
 ///         + `NumEntries == 0 && phDevices != NULL`
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
+///     - ::OFFLOAD_ERRC_INVALID_NULL_POINTER
 ///         + `NumEntries > 0 && phDevices == NULL`
-///     - ::OFFLOAD_ERROR_CODE_INVALID_VALUE
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE
+///     - ::OFFLOAD_ERRC_INVALID_VALUE
+///     - ::OFFLOAD_ERRC_INVALID_NULL_HANDLE
 ///         + `NULL == hPlatform`
+///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
 OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadDeviceGet(
     // [in] handle of the platform instance
     offload_platform_handle_t hPlatform,
@@ -299,7 +303,7 @@ OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadDeviceGet(
     offload_device_type_t DeviceType,
     // [in] the number of devices to be added to phDevices. If phDevices is not
     // NULL, then NumEntries should be greater than zero. Otherwise
-    // OFFLOAD_ERROR_CODE_INVALID_SIZE will be returned.
+    // OFFLOAD_ERRC_INVALID_SIZE will be returned.
     uint32_t NumEntries,
     // [out][optional] Array of device handles. If NumEntries is less than the
     // number of devices available, then platform shall only retrieve that
@@ -320,20 +324,21 @@ OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadDeviceGet(
 ///     - ::OFFLOAD_RESULT_SUCCESS
 ///     - ::OFFLOAD_RESULT_ERROR_UNINITIALIZED
 ///     - ::OFFLOAD_RESULT_ERROR_DEVICE_LOST
-///     - ::OFFLOAD_ERROR_CODE_UNSUPPORTED_ENUMERATION
+///     - ::OFFLOAD_ERRC_UNSUPPORTED_ENUMERATION
 ///         + If `propName` is not supported by the adapter.
-///     - ::OFFLOAD_ERROR_CODE_INVALID_SIZE
+///     - ::OFFLOAD_ERRC_INVALID_SIZE
 ///         + `propSize == 0 && pPropValue != NULL`
 ///         + If `propSize` is less than the real number of bytes needed to
 ///         return the info.
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
+///     - ::OFFLOAD_ERRC_INVALID_NULL_POINTER
 ///         + `propSize != 0 && pPropValue == NULL`
 ///         + `pPropValue == NULL && pPropSizeRet == NULL`
-///     - ::OFFLOAD_ERROR_CODE_INVALID_DEVICE
-///     - ::OFFLOAD_ERROR_CODE_OUT_OF_RESOURCES
-///     - ::OFFLOAD_ERROR_CODE_OUT_OF_HOST_MEMORY
-///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_HANDLE
+///     - ::OFFLOAD_ERRC_INVALID_DEVICE
+///     - ::OFFLOAD_ERRC_OUT_OF_RESOURCES
+///     - ::OFFLOAD_ERRC_OUT_OF_HOST_MEMORY
+///     - ::OFFLOAD_ERRC_INVALID_NULL_HANDLE
 ///         + `NULL == hDevice`
+///     - ::OFFLOAD_ERROR_CODE_INVALID_NULL_POINTER
 OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadDeviceGetInfo(
     // [in] handle of the device instance
     offload_device_handle_t hDevice,
@@ -343,8 +348,8 @@ OFFLOAD_APIEXPORT offload_result_t OFFLOAD_APICALL offloadDeviceGetInfo(
     size_t propSize,
     // [out][optional] array of bytes holding the info. If propSize is not equal
     // to or greater than the real number of bytes needed to return the info
-    // then the OFFLOAD_ERROR_CODE_INVALID_SIZE error is returned and pPropValue
-    // is not used.
+    // then the OFFLOAD_ERRC_INVALID_SIZE error is returned and pPropValue is
+    // not used.
     void *pPropValue,
     // [out][optional] pointer to the actual size in bytes of the queried
     // propName.
