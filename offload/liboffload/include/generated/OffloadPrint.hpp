@@ -309,6 +309,45 @@ inline std::ostream &operator<<(std::ostream &os,
   }
   return os;
 }
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Print operator for the ol_code_location_t type
+/// @returns std::ostream &
+
+inline std::ostream &operator<<(std::ostream &os,
+                                const struct ol_code_location_t params) {
+  os << "(struct ol_code_location_t){";
+  os << ".FunctionName = ";
+  printPtr(os, params.FunctionName);
+  os << ", ";
+  os << ".SourceFile = ";
+  printPtr(os, params.SourceFile);
+  os << ", ";
+  os << ".LineNumber = ";
+  os << params.LineNumber;
+  os << ", ";
+  os << ".ColumnNumber = ";
+  os << params.ColumnNumber;
+  os << "}";
+  return os;
+}
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Print operator for the ol_kernel_launch_size_args_t type
+/// @returns std::ostream &
+
+inline std::ostream &
+operator<<(std::ostream &os, const struct ol_kernel_launch_size_args_t params) {
+  os << "(struct ol_kernel_launch_size_args_t){";
+  os << ".Dimensions = ";
+  os << params.Dimensions;
+  os << ", ";
+  os << ".NumGroups = ";
+  printPtr(os, params.NumGroups);
+  os << ", ";
+  os << ".GroupSize = ";
+  printPtr(os, params.GroupSize);
+  os << "}";
+  return os;
+}
 
 inline std::ostream &operator<<(std::ostream &os,
                                 const struct ol_get_platform_params_t *params) {
@@ -583,8 +622,8 @@ operator<<(std::ostream &os,
   os << ".Kernel = ";
   printPtr(os, *params->pKernel);
   os << ", ";
-  os << ".GlobalWorkSize = ";
-  printPtr(os, *params->pGlobalWorkSize);
+  os << ".LaunchArgs = ";
+  printPtr(os, *params->pLaunchArgs);
   os << ", ";
   os << ".EventOut = ";
   printPtr(os, *params->pEventOut);
@@ -662,6 +701,17 @@ operator<<(std::ostream &os,
   os << ", ";
   os << ".ArgData = ";
   printPtr(os, *params->pArgData);
+  return os;
+}
+
+inline std::ostream &
+operator<<(std::ostream &os,
+           const struct ol_set_kernel_args_from_data_params_t *params) {
+  os << ".ArgData = ";
+  printPtr(os, *params->pArgData);
+  os << ", ";
+  os << ".ArgDataSize = ";
+  os << *params->pArgDataSize;
   return os;
 }
 

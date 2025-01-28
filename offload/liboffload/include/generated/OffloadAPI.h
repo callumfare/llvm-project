@@ -736,6 +736,14 @@ OL_APIEXPORT ol_result_t OL_APICALL olEnqueueDataCopy(
     ol_event_handle_t *EventOut);
 
 ///////////////////////////////////////////////////////////////////////////////
+/// @brief Size-related arguments for a kernel launch.
+typedef struct ol_kernel_launch_size_args_t {
+  size_t Dimensions;       /// Number of work dimensions
+  const size_t *NumGroups; /// Number of work groups on each dimension
+  const size_t *GroupSize; /// Size of a workgroup on each dimension.
+} ol_kernel_launch_size_args_t;
+
+///////////////////////////////////////////////////////////////////////////////
 /// @brief Enqueue a kernel launch with the specified size and parameters
 ///
 /// @details
@@ -748,14 +756,14 @@ OL_APIEXPORT ol_result_t OL_APICALL olEnqueueDataCopy(
 ///         + `NULL == Queue`
 ///         + `NULL == Kernel`
 ///     - ::OL_ERRC_INVALID_NULL_POINTER
-///         + `NULL == GlobalWorkSize`
+///         + `NULL == LaunchArgs`
 OL_APIEXPORT ol_result_t OL_APICALL olEnqueueKernelLaunch(
     // [in] handle of the queue
     ol_queue_handle_t Queue,
     // [in] handle of the kernel
     ol_kernel_handle_t Kernel,
-    // [in] an array of size 3 representing the global work size
-    const size_t *GlobalWorkSize,
+    // [in] Pointer to the size argument struct
+    const ol_kernel_launch_size_args_t *LaunchArgs,
     // [out][optional] optional recorded event for the enqueued operation
     ol_event_handle_t *EventOut);
 
@@ -891,6 +899,30 @@ OL_APIEXPORT ol_result_t OL_APICALL olSetKernelArgValue(
     size_t Size,
     // [in] pointer to the argument data
     void *ArgData);
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Use a pre-defined array of argument data. Invalidates previous
+/// olSetKernelArg* calls.
+///
+/// @details
+///    - All kernel arguments are set at once.
+///    - Previous calls to olSetKernelArgValue, olSetKernelArgsFromData on this
+///    kernel are invalidated.
+///    - The implementation makes a copy of the data; ownership is not
+///    transferred.
+///
+/// @returns
+///     - ::OL_RESULT_SUCCESS
+///     - ::OL_ERRC_UNINITIALIZED
+///     - ::OL_ERRC_DEVICE_LOST
+///     - ::OL_ERRC_INVALID_NULL_HANDLE
+///     - ::OL_ERRC_INVALID_NULL_POINTER
+///         + `NULL == ArgData`
+OL_APIEXPORT ol_result_t OL_APICALL olSetKernelArgsFromData(
+    //  pointer to the argument data
+    void *ArgData,
+    //  size of the data pointed to by ArgData
+    size_t ArgDataSize);
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Function parameters for olGetPlatform
@@ -1072,7 +1104,7 @@ typedef struct ol_enqueue_data_copy_params_t {
 typedef struct ol_enqueue_kernel_launch_params_t {
   ol_queue_handle_t *pQueue;
   ol_kernel_handle_t *pKernel;
-  const size_t **pGlobalWorkSize;
+  const ol_kernel_launch_size_args_t **pLaunchArgs;
   ol_event_handle_t **pEventOut;
 } ol_enqueue_kernel_launch_params_t;
 
@@ -1132,6 +1164,14 @@ typedef struct ol_set_kernel_arg_value_params_t {
   size_t *pSize;
   void **pArgData;
 } ol_set_kernel_arg_value_params_t;
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Function parameters for olSetKernelArgsFromData
+/// @details Each entry is a pointer to the parameter passed to the function;
+typedef struct ol_set_kernel_args_from_data_params_t {
+  void **pArgData;
+  size_t *pArgDataSize;
+} ol_set_kernel_args_from_data_params_t;
 
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief Variant of olInit that also sets source code location information
@@ -1303,7 +1343,7 @@ OL_APIEXPORT ol_result_t OL_APICALL olEnqueueDataCopyWithCodeLoc(
 /// @details See also ::olEnqueueKernelLaunch
 OL_APIEXPORT ol_result_t OL_APICALL olEnqueueKernelLaunchWithCodeLoc(
     ol_queue_handle_t Queue, ol_kernel_handle_t Kernel,
-    const size_t *GlobalWorkSize, ol_event_handle_t *EventOut,
+    const ol_kernel_launch_size_args_t *LaunchArgs, ol_event_handle_t *EventOut,
     ol_code_location_t *CodeLocation);
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -1357,6 +1397,13 @@ OL_APIEXPORT ol_result_t OL_APICALL olReleaseKernelWithCodeLoc(
 OL_APIEXPORT ol_result_t OL_APICALL olSetKernelArgValueWithCodeLoc(
     ol_kernel_handle_t Kernel, uint32_t Index, size_t Size, void *ArgData,
     ol_code_location_t *CodeLocation);
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief Variant of olSetKernelArgsFromData that also sets source code
+/// location information
+/// @details See also ::olSetKernelArgsFromData
+OL_APIEXPORT ol_result_t OL_APICALL olSetKernelArgsFromDataWithCodeLoc(
+    void *ArgData, size_t ArgDataSize, ol_code_location_t *CodeLocation);
 
 #if defined(__cplusplus)
 } // extern "C"

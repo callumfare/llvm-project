@@ -42,3 +42,19 @@ def : Function {
     ];
     let returns = [];
 }
+
+def : Function {
+    let name = "olSetKernelArgsFromData";
+    let desc = "Use a pre-defined array of argument data. Invalidates previous olSetKernelArg* calls.";
+    let details = [
+        "All kernel arguments are set at once.",
+        "Previous calls to olSetKernelArgValue, olSetKernelArgsFromData on this kernel are invalidated.",
+        "The implementation makes a copy of the data; ownership is not transferred."
+    ];
+    let params = [
+        Param<"void*", "ArgData", "pointer to the argument data">,
+        Param<"size_t", "ArgDataSize", "size of the data pointed to by ArgData">
+        // TODO: Optional indices (figure out if they are used?)
+    ];
+    let returns = [];
+}

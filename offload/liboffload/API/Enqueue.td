@@ -53,6 +53,16 @@ def : Function {
     let returns = [];
 }
 
+def : Struct {
+    let name = "ol_kernel_launch_size_args_t";
+    let desc = "Size-related arguments for a kernel launch.";
+    let members = [
+        StructMember<"size_t", "Dimensions", "Number of work dimensions">,
+        StructMember<"const size_t*", "NumGroups", "Number of work groups on each dimension">,
+        StructMember<"const size_t*", "GroupSize", "Size of a workgroup on each dimension.">
+    ];
+}
+
 
 def : Function {
     let name = "olEnqueueKernelLaunch";
@@ -61,7 +71,7 @@ def : Function {
     let params = [
         Param<"ol_queue_handle_t", "Queue", "handle of the queue", PARAM_IN>,
         Param<"ol_kernel_handle_t", "Kernel", "handle of the kernel", PARAM_IN>,
-        Param<"const size_t*", "GlobalWorkSize", "an array of size 3 representing the global work size", PARAM_IN>,
+        Param<"const ol_kernel_launch_size_args_t*", "LaunchArgs", "Pointer to the size argument struct", PARAM_IN>,
         Param<"ol_event_handle_t*", "EventOut", "optional recorded event for the enqueued operation", PARAM_OUT_OPTIONAL>
     ];
     let returns = [];
