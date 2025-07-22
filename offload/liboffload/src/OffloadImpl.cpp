@@ -597,7 +597,7 @@ Error olMemcpy_impl(ol_queue_handle_t Queue, void *DstPtr,
     } else {
       return createOffloadError(
           ErrorCode::INVALID_ARGUMENT,
-          "ane of DstDevice and SrcDevice must be a non-host device if "
+          "One of DstDevice and SrcDevice must be a non-host device if "
           "queue is specified");
     }
   }
@@ -617,6 +617,51 @@ Error olMemcpy_impl(ol_queue_handle_t Queue, void *DstPtr,
     if (auto Res = SrcDevice->Device->dataExchange(SrcPtr, *DstDevice->Device,
                                                    DstPtr, Size, QueueImpl))
       return Res;
+  }
+
+  if (EventOut)
+    *EventOut = makeEvent(Queue);
+
+  return Error::success();
+}
+
+Error olMemcpy2D_impl(ol_queue_handle_t Queue, void *DstPtr,
+                      ol_device_handle_t DstDevice, const void *SrcPtr,
+                      ol_device_handle_t SrcDevice, size_t DstPitch,
+                      size_t SrcPitch, size_t Width, size_t Height,
+                      ol_event_handle_t *EventOut) {
+  auto Host = OffloadContext::get().HostDevice();
+  if (DstDevice == Host && SrcDevice == Host) {
+    if (!Queue) {
+      for (size_t Row = 0; Row < Height; Row++) {
+        std::memcpy(DstPtr, SrcPtr, Width);
+        // DstPtr += DstPitch;
+        // SrcPtr += SrcPitch;
+      }
+      return Error::success();
+    } else {
+      return createOffloadError(
+          ErrorCode::INVALID_ARGUMENT,
+          "One of DstDevice and SrcDevice must be a non-host device if "
+          "queue is specified");
+    }
+  }
+
+  // If no queue is given the memcpy will be synchronous
+  auto QueueImpl = Queue ? Queue->AsyncInfo : nullptr;
+
+  if (DstDevice == Host) {
+    if (auto Res = SrcDevice->Device->dataRetrieve2D(
+            DstPtr, SrcPtr, DstPitch, SrcPitch, Width, Height, QueueImpl))
+      return Res;
+  } else if (SrcDevice == Host) {
+    if (auto Res = DstDevice->Device->dataSubmit2D(
+            DstPtr, SrcPtr, DstPitch, SrcPitch, Width, Height, QueueImpl))
+      return Res;
+  } else {
+    // if (auto Res = SrcDevice->Device->dataExchange(SrcPtr, *DstDevice->Device,
+    //                                                DstPtr, Size, QueueImpl))
+    //   return Res;
   }
 
   if (EventOut)

@@ -52,6 +52,7 @@ DLWRAP(cuMemcpyDtoH, 3)
 DLWRAP(cuMemcpyDtoHAsync, 4)
 DLWRAP(cuMemcpyHtoD, 3)
 DLWRAP(cuMemcpyHtoDAsync, 4)
+DLWRAP(cuMemcpy2DAsync, 2)
 
 DLWRAP(cuMemFree, 1)
 DLWRAP(cuMemFreeHost, 1)
@@ -125,6 +126,7 @@ static bool checkForCUDA() {
       {"cuMemcpyHtoDAsync", "cuMemcpyHtoDAsync_v2"},
       {"cuDevicePrimaryCtxRelease", "cuDevicePrimaryCtxRelease_v2"},
       {"cuDevicePrimaryCtxSetFlags", "cuDevicePrimaryCtxSetFlags_v2"},
+      {"cuMemcpy2DAsync", "cuMemcpy2DAsync_v2"},
   };
 
   const char *CudaLib = DYNAMIC_CUDA_PATH;

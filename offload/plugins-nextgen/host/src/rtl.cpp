@@ -277,6 +277,20 @@ struct GenELF64DeviceTy : public GenericDeviceTy {
     return Plugin::success();
   }
 
+  Error dataSubmit2DImpl(void *TgtPtr, const void *HstPtr, int64_t TgtPitch,
+                         int64_t DstPitch, int64_t Width, int64_t Height,
+                         AsyncInfoWrapperTy &AsyncInfoWrapper) override {
+    return Plugin::error(ErrorCode::UNSUPPORTED,
+                         "dataSubmit2DImpl not supported");
+  }
+
+  Error dataRetrieve2DImpl(void *HstPtr, const void *TgtPtr, int64_t HstPitch,
+                           int64_t TgtPitch, int64_t Width, int64_t Height,
+                           AsyncInfoWrapperTy &AsyncInfoWrapper) override {
+    return Plugin::error(ErrorCode::UNSUPPORTED,
+                         "dataSubmit2DImpl not supported");
+  }
+
   /// Retrieve data from the device (device to host transfer).
   Error dataRetrieveImpl(void *HstPtr, const void *TgtPtr, int64_t Size,
                          AsyncInfoWrapperTy &AsyncInfoWrapper) override {

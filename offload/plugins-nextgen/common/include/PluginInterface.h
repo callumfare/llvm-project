@@ -885,11 +885,28 @@ struct GenericDeviceTy : public DeviceAllocatorTy {
   virtual Error dataSubmitImpl(void *TgtPtr, const void *HstPtr, int64_t Size,
                                AsyncInfoWrapperTy &AsyncInfoWrapper) = 0;
 
+  /// Submit 2D data to the device (host to device strided transfer).
+  Error dataSubmit2D(void *TgtPtr, const void *HstPtr, int64_t TgtPitch,
+                     int64_t DstPitch, int64_t Width, int64_t Height,
+                     __tgt_async_info *AsyncInfo);
+  virtual Error dataSubmit2DImpl(void *TgtPtr, const void *HstPtr,
+                                 int64_t TgtPitch, int64_t HstPitch,
+                                 int64_t Width, int64_t Height,
+                                 AsyncInfoWrapperTy &AsyncInfoWrapper) = 0;
+
   /// Retrieve data from the device (device to host transfer).
   Error dataRetrieve(void *HstPtr, const void *TgtPtr, int64_t Size,
                      __tgt_async_info *AsyncInfo);
   virtual Error dataRetrieveImpl(void *HstPtr, const void *TgtPtr, int64_t Size,
                                  AsyncInfoWrapperTy &AsyncInfoWrapper) = 0;
+
+  Error dataRetrieve2D(void *HstPtr, const void *TgtPtr, int64_t HstPitch,
+                       int64_t TgtPitch, int64_t Width, int64_t Height,
+                       __tgt_async_info *AsyncInfo);
+  virtual Error dataRetrieve2DImpl(void *HstPtr, const void *TgtPtr,
+                                   int64_t HstPitch, int64_t TgtPitch,
+                                   int64_t Width, int64_t Height,
+                                   AsyncInfoWrapperTy &AsyncInfoWrapper) = 0;
 
   /// Exchange data between devices (device to device transfer). Calling this
   /// function is only valid if GenericPlugin::isDataExchangable() passing the

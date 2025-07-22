@@ -1508,11 +1508,35 @@ Error GenericDeviceTy::dataSubmit(void *TgtPtr, const void *HstPtr,
   return Err;
 }
 
+Error GenericDeviceTy::dataSubmit2D(void *TgtPtr, const void *HstPtr,
+                                    int64_t TgtPitch, int64_t HstPitch,
+                                    int64_t Width, int64_t Height,
+                                    __tgt_async_info *AsyncInfo) {
+  AsyncInfoWrapperTy AsyncInfoWrapper(*this, AsyncInfo);
+
+  auto Err = dataSubmit2DImpl(TgtPtr, HstPtr, TgtPitch, HstPitch, Width, Height,
+                              AsyncInfoWrapper);
+  AsyncInfoWrapper.finalize(Err);
+  return Err;
+}
+
 Error GenericDeviceTy::dataRetrieve(void *HstPtr, const void *TgtPtr,
                                     int64_t Size, __tgt_async_info *AsyncInfo) {
   AsyncInfoWrapperTy AsyncInfoWrapper(*this, AsyncInfo);
 
   auto Err = dataRetrieveImpl(HstPtr, TgtPtr, Size, AsyncInfoWrapper);
+  AsyncInfoWrapper.finalize(Err);
+  return Err;
+}
+
+Error GenericDeviceTy::dataRetrieve2D(void *HstPtr, const void *TgtPtr,
+                                      int64_t HstPitch, int64_t TgtPitch,
+                                      int64_t Width, int64_t Height,
+                                      __tgt_async_info *AsyncInfo) {
+  AsyncInfoWrapperTy AsyncInfoWrapper(*this, AsyncInfo);
+
+  auto Err = dataRetrieve2DImpl(HstPtr, TgtPtr, HstPitch, TgtPitch, Width,
+                                Height, AsyncInfoWrapper);
   AsyncInfoWrapper.finalize(Err);
   return Err;
 }

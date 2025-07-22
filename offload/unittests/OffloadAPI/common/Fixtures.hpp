@@ -61,9 +61,27 @@ struct OffloadTest : ::testing::Test {
   ol_device_handle_t Host = TestEnvironment::getHostDevice();
 };
 
-struct OffloadDeviceTest
-    : OffloadTest,
-      ::testing::WithParamInterface<TestEnvironment::Device> {
+template <typename T> struct OffloadDeviceTestWithParam;
+
+// template <typename T>
+// struct OffloadDeviceTestWithParam
+//     : OffloadTest,
+//       ::testing::WithParamInterface<std::tuple<TestEnvironment::Device, T>> {
+//   void SetUp() override {
+//     RETURN_ON_FATAL_FAILURE(OffloadTest::SetUp());
+
+//     auto DeviceParam = std::get<0>(GetParam());
+//     Device = DeviceParam.Handle;
+//     if (Device == nullptr)
+//       GTEST_SKIP() << "No available devices.";
+//   }
+
+//   ol_device_handle_t Device = nullptr;
+// };
+
+template <>
+struct OffloadDeviceTestWithParam<void>
+    : OffloadTest, ::testing::WithParamInterface<TestEnvironment::Device> {
   void SetUp() override {
     RETURN_ON_FATAL_FAILURE(OffloadTest::SetUp());
 
@@ -73,20 +91,10 @@ struct OffloadDeviceTest
       GTEST_SKIP() << "No available devices.";
   }
 
-  ol_platform_backend_t getPlatformBackend() const {
-    ol_platform_handle_t Platform = nullptr;
-    if (olGetDeviceInfo(Device, OL_DEVICE_INFO_PLATFORM,
-                        sizeof(ol_platform_handle_t), &Platform))
-      return OL_PLATFORM_BACKEND_UNKNOWN;
-    ol_platform_backend_t Backend;
-    if (olGetPlatformInfo(Platform, OL_PLATFORM_INFO_BACKEND,
-                          sizeof(ol_platform_backend_t), &Backend))
-      return OL_PLATFORM_BACKEND_UNKNOWN;
-    return Backend;
-  }
-
   ol_device_handle_t Device = nullptr;
 };
+
+struct OffloadDeviceTest : OffloadDeviceTestWithParam<void>{};
 
 struct OffloadPlatformTest : OffloadDeviceTest {
   void SetUp() override {
@@ -198,3 +206,11 @@ struct OffloadEventTest : OffloadQueueTest {
       [](const ::testing::TestParamInfo<TestEnvironment::Device> &info) {      \
         return SanitizeString(info.param.Name);                                \
       })
+
+#define OFFLOAD_TESTS_INSTANTIATE_DEVICE_FIXTURE_WITH_PARAM(FIXTURE, VALUES,   \
+                                                            PRINTER)           \
+  INSTANTIATE_TEST_SUITE_P(                                                    \
+      , FIXTURE,                                                               \
+      testing::Combine(::testing::ValuesIn(TestEnvironment::getDevices()),     \
+                       VALUES),                                                \
+      PRINTER)

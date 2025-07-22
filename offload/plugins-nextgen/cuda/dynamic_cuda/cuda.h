@@ -101,6 +101,40 @@ typedef struct CUmemAllocationProp_st {
 } CUmemAllocationProp_v1;
 typedef CUmemAllocationProp_v1 CUmemAllocationProp;
 
+// TODO: 2D copy
+struct CUarray_st;
+typedef struct CUarray_st *CUarray;                          /**< CUDA array */
+typedef enum CUmemorytype_enum {
+    CU_MEMORYTYPE_HOST    = 0x01,    /**< Host memory */
+    CU_MEMORYTYPE_DEVICE  = 0x02,    /**< Device memory */
+    CU_MEMORYTYPE_ARRAY   = 0x03,    /**< Array memory */
+    CU_MEMORYTYPE_UNIFIED = 0x04     /**< Unified device or host memory */
+} CUmemorytype;
+
+typedef struct CUDA_MEMCPY2D_st {
+    size_t srcXInBytes;         /**< Source X in bytes */
+    size_t srcY;                /**< Source Y */
+
+    CUmemorytype srcMemoryType; /**< Source memory type (host, device, array) */
+    const void *srcHost;        /**< Source host pointer */
+    CUdeviceptr srcDevice;      /**< Source device pointer */
+    CUarray srcArray;           /**< Source array reference */
+    size_t srcPitch;            /**< Source pitch (ignored when src is array) */
+
+    size_t dstXInBytes;         /**< Destination X in bytes */
+    size_t dstY;                /**< Destination Y */
+
+    CUmemorytype dstMemoryType; /**< Destination memory type (host, device, array) */
+    void *dstHost;              /**< Destination host pointer */
+    CUdeviceptr dstDevice;      /**< Destination device pointer */
+    CUarray dstArray;           /**< Destination array reference */
+    size_t dstPitch;            /**< Destination pitch (ignored when dst is array) */
+
+    size_t WidthInBytes;        /**< Width of 2D memory copy in bytes */
+    size_t Height;              /**< Height of 2D memory copy */
+} CUDA_MEMCPY2D_v2;
+typedef CUDA_MEMCPY2D_v2 CUDA_MEMCPY2D;
+
 typedef enum cudaError_enum {
   CUDA_SUCCESS = 0,
   CUDA_ERROR_INVALID_VALUE = 1,
@@ -320,6 +354,7 @@ CUresult cuMemcpyDtoH(void *, CUdeviceptr, size_t);
 CUresult cuMemcpyDtoHAsync(void *, CUdeviceptr, size_t, CUstream);
 CUresult cuMemcpyHtoD(CUdeviceptr, const void *, size_t);
 CUresult cuMemcpyHtoDAsync(CUdeviceptr, const void *, size_t, CUstream);
+CUresult cuMemcpy2DAsync(const CUDA_MEMCPY2D *, CUstream);
 
 CUresult cuMemFree(CUdeviceptr);
 CUresult cuMemFreeHost(void *);

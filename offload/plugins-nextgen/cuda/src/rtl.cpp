@@ -826,6 +826,32 @@ struct CUDADeviceTy : public GenericDeviceTy {
     return Plugin::check(Res, "error in cuMemcpyHtoDAsync: %s");
   }
 
+  Error dataSubmit2DImpl(void *TgtPtr, const void *HstPtr, int64_t TgtPitch,
+                         int64_t HstPitch, int64_t Width, int64_t Height,
+                         AsyncInfoWrapperTy &AsyncInfoWrapper) override {
+    if (auto Err = setContext())
+      return Err;
+
+    CUstream Stream;
+    if (auto Err = getStream(AsyncInfoWrapper, Stream))
+      return Err;
+
+    CUDA_MEMCPY2D CpyDesc = {};
+    memset(&CpyDesc, 0, sizeof(CpyDesc));
+    CpyDesc.dstDevice = (CUdeviceptr) TgtPtr;
+    CpyDesc.dstMemoryType = CU_MEMORYTYPE_DEVICE;
+    CpyDesc.srcHost = HstPtr;
+    CpyDesc.srcMemoryType = CU_MEMORYTYPE_HOST;
+
+    CpyDesc.srcPitch = HstPitch;
+    CpyDesc.dstPitch = TgtPitch;
+    CpyDesc.WidthInBytes = Width;
+    CpyDesc.Height = Height;
+
+    CUresult Res = cuMemcpy2DAsync(&CpyDesc, Stream);
+    return Plugin::check(Res, "error in cuMemcpy2DAsync: %s");
+  }
+
   /// Retrieve data from the device (device to host transfer).
   Error dataRetrieveImpl(void *HstPtr, const void *TgtPtr, int64_t Size,
                          AsyncInfoWrapperTy &AsyncInfoWrapper) override {
@@ -838,6 +864,32 @@ struct CUDADeviceTy : public GenericDeviceTy {
 
     CUresult Res = cuMemcpyDtoHAsync(HstPtr, (CUdeviceptr)TgtPtr, Size, Stream);
     return Plugin::check(Res, "error in cuMemcpyDtoHAsync: %s");
+  }
+
+  Error dataRetrieve2DImpl(void *HstPtr, const void *TgtPtr, int64_t HstPitch,
+                           int64_t TgtPitch, int64_t Width, int64_t Height,
+                           AsyncInfoWrapperTy &AsyncInfoWrapper) override {
+    if (auto Err = setContext())
+      return Err;
+
+    CUstream Stream;
+    if (auto Err = getStream(AsyncInfoWrapper, Stream))
+      return Err;
+
+    CUDA_MEMCPY2D CpyDesc = {};
+    memset(&CpyDesc, 0, sizeof(CpyDesc));
+    CpyDesc.dstHost = HstPtr;
+    CpyDesc.dstMemoryType = CU_MEMORYTYPE_HOST;
+    CpyDesc.srcDevice = (CUdeviceptr)TgtPtr;
+    CpyDesc.srcMemoryType = CU_MEMORYTYPE_DEVICE;
+
+    CpyDesc.srcPitch = TgtPitch;
+    CpyDesc.dstPitch = HstPitch;
+    CpyDesc.WidthInBytes = Width;
+    CpyDesc.Height = Height;
+
+    CUresult Res = cuMemcpy2DAsync(&CpyDesc, Stream);
+    return Plugin::check(Res, "error in cuMemcpy2DAsync: %s");
   }
 
   /// Exchange data between two devices directly. We may use peer access if
